@@ -1,0 +1,91 @@
+name: dbt CI Pipeline
+
+on:
+  # uncomment, if required
+  # push:
+  #   branches:
+  #     - main
+  #     - dev
+  
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches:
+      - main
+      - ci
+
+jobs:
+  ci_run:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.8'
+
+      - name: Install dependencies
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install --upgrade pip
+          pip install dbt-snowflake
+      
+      - name: set up dbt profile
+        run: |
+          mkdir -p ~/.dbt
+          echo "${{ secrets.DBT_CREDENTIALS }}" > ~/.dbt/profiles.yml
+
+      - name: clone CI database
+        if: (github.ref == 'refs/heads/ci') || (github.event_name == 'pull_request' && github.event.pull_request.base.ref == 'ci')
+        run: |
+          source venv/bin/activate
+          dbt run-operation ci_clone_db
+      
+      - name: Run dbt Commands
+        if: (github.ref == 'refs/heads/ci') || (github.event_name == 'pull_request' && github.event.pull_request.base.ref == 'ci')
+        run: |
+          source venv/bin/activate
+          dbt deps
+          dbt seed
+          dbt run
+          dbt test
+      
+      - name: Grant CI database access
+        if: (github.ref == 'refs/heads/ci') || (github.event_name == 'pull_request' && github.event.pull_request.base.ref == 'ci')
+        run: |
+          source venv/bin/activate
+          dbt run-operation grant_view_access
+      
+      - name: Drop CI databases
+        if: (github.ref == 'refs/heads/main') || (github.event_name == 'pull_request' && github.event.pull_request.base.ref == 'main')
+        run: |
+          source venv/bin/activate
+          dbt run-operation ci_drop_db
+
+  pre_commit_check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install pre-commit dependencies
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install --upgrade pip
+          pip install pre-commit
+          pre-commit install
+          pip install dbt-snowflake
+      
+      - name: set up dbt profile
+        run: |
+          mkdir -p ~/.dbt
+          echo "${{ secrets.DBT_CREDENTIALS }}" > ~/.dbt/profiles.yml
+
+      - name: Run pre-commit hooks
+        run: |
+          source venv/bin/activate
+          pre-commit run --all-files

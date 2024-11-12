@@ -1,0 +1,6 @@
+dbt-core==1.7.4
+dbt-snowflake==1.7.1
+pre-commit
+conventional-pre-commit
+sqlfluff
+sqlfluff-templater-dbt==2.3.5

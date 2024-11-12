@@ -1,0 +1,5 @@
+destination_schema,destination_table,source_database,source_schema,include_tables,exclude_tables
+data_profiling,raw_profiling,RAW,HUBSPOT,,
+data_profiling,staging_profile,ANALYTICS_DEV_STANDARDISED,HUBSPOT,"CUSTOMER,PROJECT",
+data_profiling,exclude_table,ANALYTICS_DEV_STANDARDISED,HUBSPOT,,CUSTOMER
+data_profiling,include_table,ANALYTICS_DEV_STANDARDISED,HUBSPOT,CUSTOMER,

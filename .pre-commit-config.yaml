@@ -1,0 +1,59 @@
+default_install_hook_types:
+  - pre-commit
+  - commit-msg
+  - pre-push
+
+default_stages: [pre-commit]
+
+exclude: snapshots/.*
+
+repos:
+
+  - repo: meta 
+    hooks: 
+      - id: identity
+
+  - repo: https://github.com/compilerla/conventional-pre-commit
+    rev: v3.2.0
+    hooks:
+      - id: conventional-pre-commit
+        stages: [commit-msg]
+
+  - repo: https://github.com/dbt-checkpoint/dbt-checkpoint
+    rev: v2.0.1
+    hooks:
+
+      # dbt commands
+      - id: dbt-clean
+      - id: dbt-deps
+      - id: dbt-compile
+      - id: dbt-docs-generate
+      - id: dbt-parse
+
+      # Model checks  
+      - id: check-model-has-properties-file
+        files: ^models\/(?!04_governance)        # Excluding Governance Folder
+      - id: check-model-has-description
+        files: ^models\/(?!04_governance)        # Excluding Governance Folder
+      - id: check-model-has-all-columns
+        files: ^models\/(?!04_governance)        # Excluding Governance Folder
+      - id: check-model-columns-have-desc
+        files: ^models\/(?!04_governance)         # Excluding Governance Folder
+      
+      - id: check-model-has-tests-by-name
+        args: ["--tests", "unique=1", "not_null=1", "--"]
+        files: ^models\/(?!04_governance)         # Excluding Governance Folder
+
+      # Script checks
+      - id: check-script-ref-and-source
+        files: ^models\/
+        
+        # exclude certain folders or models
+        # exclude: macros/
+
+      - id: check-script-semicolon
+      
+      # - id: check-script-has-no-table-name
+
+      # Macro
+      # - id: check-macro-has-description

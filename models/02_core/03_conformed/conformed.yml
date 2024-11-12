@@ -1,0 +1,107 @@
+version: 2
+
+models:
+  - name: date
+    description: This model generates a comprehensive date dimension table for the specified date range. 
+    columns:
+      - name: date_key
+        description: Primary key for the date.
+      - name: date
+        description: Date for which metrics are calculated.
+        tests:
+          - not_null
+          - unique
+      - name: day_name
+        description: Name of the day of the week for the date.
+      - name: day_of_week
+        description: Day of the week (1-7) for the date. Monday is considered as 1 and Sunday as 7.
+      - name: day_of_month
+        description: Day of the month (1-31) for the date.
+      - name: day_of_quarter
+        description: Day of the quarter (1-92).
+      - name: day_of_year
+        description: Day of the year (1-366) for the date.
+      - name: week_of_month
+        description: Week of the month (1-5) for the date.
+      - name: week_of_quarter
+        description: Week of the quarter (1-13) for the date.
+      - name: week_of_year
+        description: Week of the year (1-53) for the date.
+      - name: month_of_year
+        description: Month number for the date. 
+      - name: month_name
+        description: Name of the month for the date.
+      - name: quarter
+        description: Quarter of the year (1-4) for the date.
+      - name: year
+        description: Year component of the date.
+      - name: is_weekend
+        description: Flag indicating if the date is a weekend.
+      - name: is_weekday
+        description: Flag indicating if the date is a weekday.
+      - name: is_first_day_of_month
+        description: Flag indicating if the date is the first day of the month.
+      - name: is_month_end
+        description: Flag indicating if the date is the last day of the month.
+      - name: is_first_day_of_quarter
+        description: Flag indicating if the date is the first day of the quarter.
+      - name: is_last_day_of_quarter
+        description: Flag indicating if the date is the last day of the quarter.
+      - name: is_first_day_of_year
+        description: Flag indicating if the date is the first day of the year.
+      - name: is_year_end
+        description: Flag indicating if the date is the last day of the year.
+      - name: is_leap_year
+        description: Flag indicating if the year is a leap year.
+      - name: current_day_flag
+        description: Flag indicating if the date is the current date.
+      - name: previous_day_flag
+        description: Flag indicating if the date is the previous date to the current date.
+      - name: next_day_flag
+        description: Flag indicating if the date is the next date to the current date.
+      - name: current_week_flag
+        description: Flag indicating if the date is within the current week.
+      - name: previous_week_flag
+        description: Flag indicating if the date is within the previous week.
+      - name: next_week_flag
+        description: Flag indicating if the date is within the next week.
+      - name: current_month_flag
+        description: Flag indicating if the date is within the current month.
+      - name: previous_month_flag
+        description: Flag indicating if the date is within the previous month.
+      - name: next_month_flag
+        description: Flag indicating if the date is within the next month.
+      - name: current_quarter_flag
+        description: Flag indicating if the date is within the current quarter.
+      - name: previous_quarter_flag
+        description: Flag indicating if the date is within the previous quarter.
+      - name: next_quarter_flag
+        description: Flag indicating if the date is within the next quarter.
+      - name: current_year_flag
+        description: Flag indicating if the date is within the current year.
+      - name: previous_year_flag
+        description: Flag indicating if the date is within the previous year.
+      - name: next_year_flag
+        description: Flag indicating if the date is within the next year.
+      - name: week_to_date_flag
+        description: Indicates if the date is within the current week up to today.
+      - name: month_to_date_flag
+        description: Indicates if the date is within the current month up to today.
+      - name: year_to_date_flag
+        description: Indicates if the date is within the current year up to today.
+      - name: is_uk_bank_holiday
+        description: Flag indicating if the date is a UK holiday.
+      - name: is_business_day
+        description: Flag indicating if the day is a business day.
+      - name: days_in_month
+        description: Number of days in the month.
+      - name: days_in_quarter
+        description: Number of days in the quarter.
+      - name: days_in_year
+        description: Number of days in the year.
+      - name: days_remaining_in_month
+        description: Number of days remaining in the month.
+      - name: days_remaining_in_quarter
+        description: Number of days remaining in the quarter.
+      - name: days_remaining_in_year
+        description: Number of days remaining in the year.

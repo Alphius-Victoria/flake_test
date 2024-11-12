@@ -1,0 +1,60 @@
+schedules:
+- cron: "0 0 * * *"  # Every day at midnight UTC
+  displayName: Daily midnight run
+  branches:
+    include:
+    - main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  DBT_PROFILES_DIR: $(Pipeline.Workspace)/dbt/profiles
+
+steps:
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: '3.x'
+    addToPath: true
+
+- script: |
+    python -m venv .venv
+    source .venv/bin/activate
+    pip install --upgrade pip
+    pip install dbt-core dbt-snowflake
+  displayName: 'Install dbt'
+
+- script: |
+    mkdir -p $(DBT_PROFILES_DIR)
+    cat <<EOF > $(DBT_PROFILES_DIR)/profiles.yml
+    dbt_flake:
+      target: dev
+      outputs:
+        dev:
+          type: snowflake
+          account: $(SNOWFLAKE_ACCOUNT)
+          user: $(SNOWFLAKE_USER)
+          password: $(SNOWFLAKE_PASSWORD)
+          role: $(SNOWFLAKE_ROLE)
+          warehouse: $(SNOWFLAKE_WAREHOUSE)
+          database: $(SNOWFLAKE_DATABASE)
+          schema: $(SNOWFLAKE_SCHEMA)
+          threads: 4
+          client_session_keep_alive: false
+    EOF
+  displayName: 'Setup dbt profile'
+
+- script: |
+    source .venv/bin/activate
+    dbt debug
+  displayName: 'dbt debug'
+
+- script: |
+    source .venv/bin/activate
+    dbt seed
+  displayName: 'dbt seed'
+
+- script: |
+  source .venv/bin/activate
+  dbt run
+  displayName: 'dbt run'

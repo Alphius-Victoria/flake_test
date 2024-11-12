@@ -1,0 +1,55 @@
+name: Build Prod On Schedule
+
+on:
+  schedule:
+    - cron: '0 5 * * *'
+
+  # Allows you to run this workflow manually from the Actions tab.
+  workflow_dispatch:
+
+jobs:
+  ci_run:
+    name: Build prod on schedule
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.8'
+
+      - name: Install dependencies
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install --upgrade pip
+          pip install dbt-snowflake
+      
+      - name: set up dbt profile
+        run: |
+          mkdir -p ~/.dbt
+          echo "${{ secrets.DBT_CREDENTIALS }}" > ~/.dbt/profiles.yml
+
+      - name: running seed tables
+        run: |
+          source venv/bin/activate
+          dbt seed --full-refresh
+      
+      - name: Run snapshot models
+        run: |
+          source venv/bin/activate
+          dbt snapshot -s tag:zoho
+          dbt snapshot -s tag:jin
+      
+      - name: Run Models
+        run: |
+          source venv/bin/activate
+          dbt run
+      
+      - name: Run dbt Tests
+        run: |
+          source venv/bin/activate
+          dbt test

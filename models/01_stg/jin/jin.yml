@@ -1,0 +1,37 @@
+version: 2
+
+models:
+  - name: contact
+    description: This model contains customer contact information.    
+    docs:
+      show: true
+      node_color: #cd7f32
+    columns:
+      - name: cust_id
+        description: Unique identifier for each customer.
+        tests:
+          - unique
+      - name: phone_no
+        description: Phone number of the customer.
+        tests:
+          - not_null
+      - name: email_address
+        description: Email address of the customer.
+        tests:
+          - not_null
+
+  - name: employee 
+    description: This model contains employee information.
+    columns:
+      - name: emp_id
+        description: Unique identifier for each employee.
+        tests:
+          - unique 
+      - name: name
+        description: Name of the employee.
+        tests:
+          - not_null
+      - name: location
+        description: Location of the employee.
+        tests:
+          - not_null

@@ -1,0 +1,140 @@
+version: 2
+
+macros:
+    - name: generate_stg_table
+      description: Macro for data type conversion and filtering columns as per data standards 
+      arguments:
+        - name: source_name
+          type: string
+          description: Name of the source
+        - name: table_name
+          type: string
+          description: Name of the table
+
+    - name: get_required_columns
+      description: Macro for getting metadata information 
+      arguments:
+        - name: source_file
+          type: string
+          description: Name of the seed file that contains metadata for the table
+        - name: table_name
+          type: string
+          description: Name of the table
+        - name: source_name
+          type: string
+          description: Name of the source
+
+    - name: ci_clone_db
+      description: Macro for cloning the prod databases into ci databases
+      arguments:
+        - name: None
+
+    - name: ci_drop_db
+      description: Macro to drop the ci databases
+      arguments:
+        - name: None
+          
+    - name: grant_view_access
+      description: Macro to provide privilege to the user_role
+      arguments:
+        - name: None
+
+    - name: is_date_or_time
+      description: Macro to determine whether a column type is datetime or date
+      arguments:
+        - name: dtype
+          type: string
+          description: Datatype of the column
+  
+    - name: is_numeric
+      description: Macro to determine whether a column type is numeric or not
+      arguments:
+        - name: dtype
+          type: string
+          description: Datatype of the column
+
+    - name: read_information_schema
+      description: Macro to fetch the details from information schema for data profiling
+      arguments:
+        - name: db_name
+          type: string
+          description: Name of the database for profiling
+        - name: schema_name
+          type: string
+          description: Schema name for profiling
+        - name: include_tables
+          type: string
+          description: Pass the list of table names for doing data profiling
+        - name: exclude_tables
+          type: string
+          description: Pass the list of table names for exclude data profiling
+
+    - name: create_data_profile_table
+      description: Macro for creating base table for data profiling
+      arguments:
+        - name: db_name
+          type: string
+          description: Name of the database
+        - name: schema_name
+          type: string
+          description: Name of the schema
+        - name: table_name
+          type: string
+          description: Name of the table
+
+    - name: do_data_profile
+      description: Macro for profiling the columns
+      arguments:
+        - name: information_schema_data
+          type: string
+          description: Details of database, schema, table name
+        - name: source_table_name
+          type: string
+          description: Name of the source that we profile
+        - name: chunk_column
+          type: string
+          description: Name of the column that we profile
+        - name: current_date_and_time
+          type: string
+          description: Pass the current timestamp for loaded_at field
+
+    - name: get_rolling_start_date
+      description: Macro to get the rolling back period start date
+      arguments: 
+        - name: rolling_back_period
+          type: number
+          description: Number of days to rollback from the current timestamp
+
+    - name: parse_dbt_results
+      description: Macro to 
+      arguments: 
+        - name: results
+          type: string
+          description:
+
+    - name: log_dbt_results
+      description: Macro to 
+      arguments: 
+        - name: results
+          type: string
+          description:
+
+    - name: create_new_schema
+      description: Macro for creating schema
+      arguments:
+        - name: db_name
+          type: string
+          description: Database name
+        - name: schema_name
+          type: string
+          description: Schema name
+
+    - name: generate_schema_name
+      description: Macro for generating custom schema
+      arguments:
+        - name: custom_schema_name
+          type: string
+          description: Custom schema name for specified node
+        - name: node
+          type: object
+          description: Current dbt resource (model or table) being processed

@@ -1,0 +1,165 @@
+# Name your project! Project names should contain only lowercase characters and underscores.
+name: 'dbt_flake'
+version: '1.0.0'
+config-version: 2
+
+# This setting configures which "profile" dbt uses for this project.
+profile: dbt_flake
+
+# You probably won't need to change these!
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+# directories to be removed by `dbt clean`
+clean-targets:
+  - "target"
+  - "dbt_packages"
+ 
+# Configuring models
+models:
+  dbt_flake:
+
+    # Project Level Configurations
+    # Persist docs is used to display the documentations in platform table (Based on project requirement we can enable/disable)
+    +persist_docs:
+      relation: true
+      columns: true
+    
+    # Enable/Disable transient tables in Snowflake
+    +transient: "{{ false if target.name == 'prod' else true }}"
+
+    # Materialized has set to table for project level all the models(Based on project requirement we can update type)
+    +materialized: table
+
+    # If you have a model, you can specify your default database, and schema name(Mandatory to update this)
+    +database: analytics_{{ (target.name).lower() }}_staging
+    +schema: dbt
+
+    # A value with which to tag all quires, you can use this later to filter the queries in Snowflake Query History
+    # Also, you can set different query tag for different folders
+    +query_tag: dbt_execution
+    
+    # Now we can set the folder level configurations, If we missed any folders then those models will store under project level database
+    01_stg:
+      +database: analytics_{{ (target.name).lower() }}_staging
+      +docs:
+        show: true
+        node_color: "#B08D57"
+      hubspot:
+        +schema: hubspot
+        +tags: ['stg', hubspot]
+      jin:
+        +schema: jin
+        +tags: ['stg', 'jin']
+    
+    02_core:
+      +database: analytics_{{ (target.name).lower() }}_core
+      +docs:
+        show: true
+        node_color: "#C0C0C0"
+      01_pre_prep:
+        +schema: pre_prep
+        +tags: ['pre_prep']
+      02_prep:
+        +schema: prep
+        +tags: ['prep']
+      03_conformed:
+        +schema: conformed
+        +tags: ['conformed']
+
+    03_presentation:
+      +database: analytics_{{ (target.name).lower() }}_presentation
+      01_datamart:
+        +schema: datamart
+        +tags: ['datamart']
+        +docs:
+          show: true
+          node_color: "#FFD700"
+      02_report:
+        +schema: report
+        +tags: ['report']
+        +docs:
+          show: true
+          node_color: "#E5E4E2"
+
+    # Fetch the target name dynamically to switch databases while development, and deployment
+    04_governance:
+      +database: governance_{{ (target.name).lower() }}
+      data_quality:
+        +schema: data_quality
+      monitor:
+        +schema: monitor
+
+        # Disabled the documentation for above folder
+        +docs:
+          show: false
+
+    # You can configure databases, schema, and etc for model/folder level
+    # ------
+    # ------
+    # ------
+
+
+# Configuring Seeds
+seeds:
+  dbt_flake:
+
+    # Project Level Configurations
+    # Everytime seed tables will get update in full refresh manner
+    +full_refresh: true
+
+    # If you have a model, you can specify your default database, and schema name(Mandatory to update this)
+    +database: governance_{{ (target.name).lower() }}
+    +schema: dbt
+
+    # Presist docs is used to display the documentations in platform table
+    +persist_docs:
+      relation: true
+      columns: true
+
+    # Folder level configurations
+    analytics:
+      +database: analytics_{{ (target.name).lower() }}_core
+      +schema: reference
+    
+    raw_data:
+      +database: RAW
+
+      # folder level schema configuration
+      hubspot:
+        +schema: hubspot
+      jin:
+        +schema: jin
+    
+    governance:
+      +database: governance_{{ (target.name).lower() }}
+      config:
+        +schema: config_data
+
+# Global Configurations
+vars:
+  source_freshness:
+    rolling_back_period: 30   # delete records older than 30 days
+
+  run_result:
+    rolling_back_period: 30   # delete records older than 30 days
+
+  # data profile configurations
+  profiling: 
+    output_table_destination_database: governance_{{ (target.name).lower() }}       # destination database for profiling output tables
+    config_table_database: governance_{{ (target.name).lower() }}                   # which database the configuration table has stored
+    config_table_schema: config_data                                                # which schema the configuration table has stored
+    config_table_name: config_data_profile                                          # name of the configuration table
+
+  # CI databases access
+  ci:
+    prod_databases: ['ANALYTICS_PROD_STAGING', 'ANALYTICS_PROD_CORE', 'ANALYTICS_PROD_PRESENTATION', 'GOVERNANCE_PROD']
+    read_access: ['SYSADMIN']
+
+# Trigger the macro/SQL Query at the end of each dbt command
+on-run-end: 
+  - "{{ log_dbt_results(results) }}"

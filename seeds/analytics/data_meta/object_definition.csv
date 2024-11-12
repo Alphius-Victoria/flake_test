@@ -1,0 +1,16 @@
+source_name,table_name,column_name,column_name_with_data_type
+hubspot,customers,cust_id,cust_id::VARCHAR
+hubspot,customers,name,name::VARCHAR
+hubspot,customers,company,company::VARCHAR
+hubspot,customers,email_address,email_address::VARCHAR
+hubspot,customers,created_at,TO_TIMESTAMP_NTZ(created_at)
+hubspot,projects,project_id,::project_id::VARCHAR
+hubspot,projects,name,name::VARCHAR
+hubspot,projects,amount,amount::NUMBER
+hubspot,projects,tenure,tenure::NUMBER
+jin,contacts,cust_id,cust_id::VARCHAR
+jin,contacts,phone_no,phone_no::VARCHAR
+jin,contacts,email_address,email_address::VARCHAR
+jin,employees,emp_id,emp_id::VARCHAR
+jin,employees,name,name::VARCHAR
+jin,employees,location,location::VARCHAR

@@ -1,0 +1,43 @@
+version: 2
+
+models:
+  - name: customer 
+    description: This model stores customer information.  
+    # Table level test
+    # tests:
+    #   - not_null   
+    columns:
+      - name: cust_id
+        description: Unique identifier for each customer.
+        tests:
+          - unique
+      - name: name
+        description: Name of the customer.     
+      - name: company
+        description: Name of the company associated with the customer.      
+      - name: email_address
+        description: Email address of the customer.    
+        tests:
+          - not_null
+      - name: created_at
+        description: Date and time when the customer record was created.
+ 
+  - name: project
+    description: This model stores information related to various projects.
+
+    # Table level test
+    # tests:
+    #   - not_null
+    columns:
+      - name: project_id
+        description: Unique identifier for each project
+        tests:
+          - unique
+      - name: name
+        description: Name of the project.
+        tests:
+          - not_null
+      - name: amount
+        description: Total amount allocated or spent to the project.
+      - name: tenure
+        description: Duration of the project.

@@ -1,0 +1,19 @@
+version: 2 
+
+macros: 
+
+  - name: clean_column_name
+    description: |
+      To clean up column names of special characters 
+      End goal is for a column name that can be used without the need for quotes
+    args:
+      - name: column_name
+  
+  - name: standardise
+    description: |
+      Iterate through the columns of a table and 
+      return sql with the columns having nice names instead
+    args:
+      - name: object
+        description: |
+          object you wish to standardise, can be source, ref
