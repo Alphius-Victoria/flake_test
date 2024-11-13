@@ -27,17 +27,23 @@ macros:
     - name: ci_clone_db
       description: Macro for cloning the prod databases into ci databases
       arguments:
-        - name: ""
+        - name: placeholder
+          type: string
+          description: Placeholder argument for cloning operation
 
     - name: ci_drop_db
       description: Macro to drop the ci databases
       arguments:
-        - name: ""
-          
+        - name: placeholder
+          type: string
+          description: Placeholder argument for drop operation
+
     - name: grant_view_access
       description: Macro to provide privilege to the user_role
       arguments:
-        - name: ""
+        - name: placeholder
+          type: string
+          description: Placeholder argument for granting access
 
     - name: is_date_or_time
       description: Macro to determine whether a column type is datetime or date
@@ -45,7 +51,7 @@ macros:
         - name: dtype
           type: string
           description: Datatype of the column
-  
+
     - name: is_numeric
       description: Macro to determine whether a column type is numeric or not
       arguments:
@@ -106,18 +112,18 @@ macros:
           description: Number of days to rollback from the current timestamp
 
     - name: parse_dbt_results
-      description: Macro to 
+      description: Macro to parse DBT command results
       arguments: 
         - name: results
           type: string
-          description: ""
+          description: Results from a DBT command to parse
 
     - name: log_dbt_results
-      description: Macro to 
+      description: Macro to log DBT command results
       arguments: 
         - name: results
           type: string
-          description: ""
+          description: Results from a DBT command to log
 
     - name: create_new_schema
       description: Macro for creating schema
@@ -137,4 +143,4 @@ macros:
           description: Custom schema name for specified node
         - name: node
           type: object
-          description: Current dbt resource (model or table) being processed
+          description: Current DBT resource (model or table) being processed
