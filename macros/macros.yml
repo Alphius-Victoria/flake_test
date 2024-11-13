@@ -27,17 +27,17 @@ macros:
     - name: ci_clone_db
       description: Macro for cloning the prod databases into ci databases
       arguments:
-        - name: None
+        - name: ""
 
     - name: ci_drop_db
       description: Macro to drop the ci databases
       arguments:
-        - name: None
+        - name: ""
           
     - name: grant_view_access
       description: Macro to provide privilege to the user_role
       arguments:
-        - name: None
+        - name: ""
 
     - name: is_date_or_time
       description: Macro to determine whether a column type is datetime or date
