@@ -116,7 +116,7 @@ macros:
       arguments: 
         - name: results
           type: string
-          description: Results from a DBT command to parse
+          description: ""
 
     - name: log_dbt_results
       description: Macro to log DBT command results
