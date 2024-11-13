@@ -110,14 +110,14 @@ macros:
       arguments: 
         - name: results
           type: string
-          description:
+          description: ""
 
     - name: log_dbt_results
       description: Macro to 
       arguments: 
         - name: results
           type: string
-          description:
+          description: ""
 
     - name: create_new_schema
       description: Macro for creating schema
