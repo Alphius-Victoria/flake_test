@@ -4,3 +4,4 @@ pre-commit
 conventional-pre-commit
 sqlfluff
 sqlfluff-templater-dbt==2.3.5
+
