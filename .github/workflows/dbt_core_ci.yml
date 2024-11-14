@@ -89,14 +89,16 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Create PR from CI to Main
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
           git checkout ci
           git pull origin ci
-          git checkout -b auto-pr-ci-to-main
-          git push origin auto-pr-ci-to-main
-          gh pr create --base main --head auto-pr-ci-to-main --title "Automated PR: Merge CI changes to main" --body "This is an automated PR to merge changes from ci to main after merging dev to ci."
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          curl -X POST -H "Authorization: token $GITHUB_TOKEN" \
+               -H "Accept: application/vnd.github.v3+json" \
+               https://api.github.com/repos/${{ github.repository }}/pulls \
+               -d '{"title":"Automated PR: Merge CI changes to main","head":"ci","base":"main","body":"This is an automated PR to merge changes from ci to main after merging dev to ci."}'
+
 
   pre_commit_check:
     runs-on: ubuntu-latest
