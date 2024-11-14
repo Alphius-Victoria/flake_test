@@ -18,14 +18,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Checkout the repository
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      # Set up Python
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.8'
 
+      # Install dependencies
       - name: Install dependencies
         run: |
           python -m venv venv
@@ -33,17 +36,20 @@ jobs:
           pip install --upgrade pip
           pip install dbt-snowflake
       
+      # Set up dbt profile
       - name: set up dbt profile
         run: |
           mkdir -p ~/.dbt
           echo "${{ secrets.DBT_CREDENTIALS }}" > ~/.dbt/profiles.yml
 
+      # Clone CI database (optional)
       - name: clone CI database
         if: (github.ref == 'refs/heads/ci') || (github.event_name == 'pull_request' && github.event.pull_request.base.ref == 'ci')
         run: |
           source venv/bin/activate
           dbt run-operation ci_clone_db
       
+      # Run dbt commands
       - name: Run dbt Commands
         if: (github.ref == 'refs/heads/ci') || (github.event_name == 'pull_request' && github.event.pull_request.base.ref == 'ci')
         run: |
@@ -53,20 +59,23 @@ jobs:
           dbt run
           dbt test
       
+      # Grant CI database access
       - name: Grant CI database access
         if: (github.ref == 'refs/heads/ci') || (github.event_name == 'pull_request' && github.event.pull_request.base.ref == 'ci')
         run: |
           source venv/bin/activate
           dbt run-operation grant_view_access
       
+      # Drop CI databases
       - name: Drop CI databases
         if: (github.ref == 'refs/heads/main') || (github.event_name == 'pull_request' && github.event.pull_request.base.ref == 'main')
         run: |
           source venv/bin/activate
           dbt run-operation ci_drop_db
 
+      # **Create PR from CI to Main (Even if the tests fail)**
       - name: Create PR from CI to Main
-        if: github.event.pull_request.base.ref == 'ci' && github.event.pull_request.merged == true
+        if: github.event_name == 'pull_request' && github.event.pull_request.base.ref == 'ci' && github.event.pull_request.merged == true
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -74,7 +83,7 @@ jobs:
           git pull origin ci
           git checkout -b auto-pr-ci-to-main
           git push origin auto-pr-ci-to-main
-          gh pr create --base main --head auto-pr-ci-to-main --title "Automated PR: Merge CI changes to main" --body "This is an automated PR to merge changes from ci to main after successful CI checks."
+          gh pr create --base main --head auto-pr-ci-to-main --title "Automated PR: Merge CI changes to main" --body "This is an automated PR to merge changes from ci to main after the PR from dev to ci was merged."
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -84,6 +93,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      # Install pre-commit dependencies
       - name: Install pre-commit dependencies
         run: |
           python -m venv venv
@@ -93,11 +103,13 @@ jobs:
           pre-commit install
           pip install dbt-snowflake
       
+      # Set up dbt profile
       - name: set up dbt profile
         run: |
           mkdir -p ~/.dbt
           echo "${{ secrets.DBT_CREDENTIALS }}" > ~/.dbt/profiles.yml
 
+      # Run pre-commit hooks
       - name: Run pre-commit hooks
         run: |
           source venv/bin/activate
