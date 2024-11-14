@@ -22,7 +22,7 @@ models:
       - name: created_at
         description: Date and time when the customer record was created.
  
-  - name: project
+  - name: projects
     description: This model stores information related to various projects.
 
     # Table level test
