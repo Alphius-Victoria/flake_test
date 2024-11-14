@@ -36,19 +36,7 @@ jobs:
           pip install --upgrade pip
           pip install dbt-snowflake
 
-      # Create a PR from CI to Main after a push to ci branch
-      - name: Create PR from CI to Main
-        if: github.ref == 'refs/heads/ci'  # Ensures this runs only when changes are pushed to the ci branch
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git checkout ci
-          git pull origin ci
-          git checkout -b auto-pr-ci-to-main
-          git push origin auto-pr-ci-to-main
-          gh pr create --base main --head auto-pr-ci-to-main --title "Automated PR: Merge CI changes to main" --body "This is an automated PR to merge changes from ci to main after the PR from dev to ci was merged."
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
       
       # Set up dbt profile
       - name: set up dbt profile
@@ -87,6 +75,24 @@ jobs:
           source venv/bin/activate
           dbt run-operation ci_drop_db
 
+  pr_main:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      # Create a PR from CI to Main after a push to ci branch
+      - name: Create PR from CI to Main
+        if: github.ref == 'refs/heads/ci'  # Ensures this runs only when changes are pushed to the ci branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout ci
+          git pull origin ci
+          git checkout -b auto-pr-ci-to-main
+          git push origin auto-pr-ci-to-main
+          gh pr create --base main --head auto-pr-ci-to-main --title "Automated PR: Merge CI changes to main" --body "This is an automated PR to merge changes from ci to main after the PR from dev to ci was merged."
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
 
   pre_commit_check:
