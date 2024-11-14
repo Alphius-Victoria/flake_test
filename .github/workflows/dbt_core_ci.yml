@@ -73,9 +73,9 @@ jobs:
           source venv/bin/activate
           dbt run-operation ci_drop_db
 
-      # **Create PR from CI to Main (Even if the tests fail)**
+      # Create a PR from CI to Main after a push to ci branch
       - name: Create PR from CI to Main
-        if: github.event_name == 'pull_request' && github.event.pull_request.base.ref == 'ci' && github.event.pull_request.merged == true
+        if: github.ref == 'refs/heads/ci'  # Ensures this runs only when changes are pushed to the ci branch
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
