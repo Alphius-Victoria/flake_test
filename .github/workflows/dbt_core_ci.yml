@@ -65,9 +65,8 @@ jobs:
           source venv/bin/activate
           dbt run-operation ci_drop_db
 
-      # Create a PR from CI to Main
       - name: Create PR from CI to Main
-        if: success()
+        if: github.event.pull_request.base.ref == 'ci' && github.event.pull_request.merged == true
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
