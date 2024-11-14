@@ -15,6 +15,7 @@ line_position = trailing
 [sqlfluff:rules:capitalisation.keywords] 
 capitalisation_policy = upper
 
+
 [sqlfluff:rules:aliasing.table]
 aliasing = implicit
 
