@@ -41,3 +41,5 @@ group_by_and_order_by_style = implicit
 spacing_before = align
 align_within = select_clause
 spacing_after = touch
+
+
