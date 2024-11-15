@@ -7,10 +7,6 @@ on:
       - main
       - ci
 
-  push:
-    branches:
-      - ci  # Trigger when there's a push to 'ci' branch
-
 permissions:
   contents: write
   pull-requests: write
@@ -66,41 +62,26 @@ jobs:
         run: |
           source venv/bin/activate
           dbt run-operation ci_drop_db
+pr_main:
+  runs-on: ubuntu-latest
+  if: github.ref == 'refs/heads/ci'  # Runs only when changes are pushed to 'ci' branch
 
-  pr_main:
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/ci'  # Runs only when changes are pushed to 'ci' branch
+  steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+    - name: Create PR from CI to Main
+      env:
+        GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+      run: |
+        git checkout ci
+        git pull origin ci
+        curl -X POST -H "Authorization: token $GITHUB_TOKEN" \
+             -H "Accept: application/vnd.github.v3+json" \
+             https://api.github.com/repos/${{ github.repository }}/pulls \
+             -d '{"title":"Automated PR: Merge CI changes to main","head":"ci","base":"main","body":"This is an automated PR to merge changes from ci to main after merging dev to ci."}'
 
-      - name: Install GitHub CLI
-        run: |
-          curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo tee /usr/share/keyrings/githubcli-archive-keyring.gpg > /dev/null
-          echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
-          sudo apt update
-          sudo apt install gh -y
-
-
-      - name: Set up Git user
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-
-      - name: Create PR from CI to Main
-        env:
-          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
-        run: |
-          git checkout ci
-          git pull origin ci
-          curl -X POST -H "Authorization: token $GITHUB_TOKEN" \
-               -H "Accept: application/vnd.github.v3+json" \
-               https://api.github.com/repos/${{ github.repository }}/pulls \
-               -d '{"title":"Automated PR: Merge CI changes to main","head":"ci","base":"main","body":"This is an automated PR to merge changes from ci to main after merging dev to ci."}'
-
-
-  pre_commit_check:
+ pre_commit_check:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
