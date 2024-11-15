@@ -9,7 +9,7 @@
         {% set sql = 'CREATE OR REPLACE DATABASE '+ upper_ci_database +' CLONE '+ upper_prod_database +';' %}
 
         {% do run_query(sql) %}
-
+ 
         {{ log("Created Cloned Database from "+ upper_prod_database, info=True) }}
 
     {% endfor %}
